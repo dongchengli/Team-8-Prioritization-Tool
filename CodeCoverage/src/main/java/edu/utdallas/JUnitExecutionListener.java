@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.Iterator;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -285,6 +285,7 @@ public class JUnitExecutionListener extends RunListener {
         }
         
         Map<String , Integer> classOrder = new HashMap<>();
+        Map<String , Integer> classOrderAdditional = new HashMap<>();
         for (Map.Entry<String, ArrayList<Integer>> pRiBody : pRi.entrySet()) {
             System.out.println("->" + pRiBody.getKey());
             System.out.println("\t" + "Total Strategy:" + pRiBody.getValue().get(0) + "  Additional Strategy:"
@@ -297,11 +298,26 @@ public class JUnitExecutionListener extends RunListener {
             }else{
                 classOrder.put(className , pRiBody.getValue().get(0));
             }
+            
+            if(classOrderAdditional.keySet().contains(className)){
+                int num = pRiBody.getValue().get(1) + classOrderAdditional.get(className);
+                classOrderAdditional.put(className , num);
+            }else{
+                classOrderAdditional.put(className , pRiBody.getValue().get(1));
+            }
         }
         
         
         List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(classOrder.entrySet());
+        List<Map.Entry<String, Integer>> listAdditional = new LinkedList<Map.Entry<String, Integer>>(classOrderAdditional.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Entry<String, Integer> arg0, Entry<String, Integer> arg1) {
+                // TODO Auto-generated method stub
+                return (arg1.getValue()).compareTo(arg0.getValue());
+            }
+        });
+        Collections.sort(listAdditional, new Comparator<Map.Entry<String, Integer>>() {
             @Override
             public int compare(Entry<String, Integer> arg0, Entry<String, Integer> arg1) {
                 // TODO Auto-generated method stub
@@ -313,6 +329,10 @@ public class JUnitExecutionListener extends RunListener {
         for (Map.Entry<String, Integer> entry : list) {
             result1.put(entry.getKey(), entry.getValue());
         }
+        Map<String, Integer> result1Additional = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> entry : listAdditional) {
+            result1Additional.put(entry.getKey(), entry.getValue());
+        }
         
         String content = "import org.junit.runner.RunWith;\n"
         + "import org.junit.runners.Suite;\n@RunWith(Suite.class)\n@Suite.SuiteClasses({";
@@ -321,6 +341,27 @@ public class JUnitExecutionListener extends RunListener {
         content += "})\n";
         content += "public class FeatureTestSuite{\n}";
         writeSuitFile(System.getProperty("user.dir")+"/src/test/java/FeatureTestSuite.java", content);
+        
+        String contentAdditional = "import org.junit.runner.RunWith;\n"
+        + "import org.junit.runners.Suite;\n@RunWith(Suite.class)\n@Suite.SuiteClasses({";
+        /*******Start:Put total-max class as the first class*******/
+        String firstTotalClass = null;
+        Iterator<Map.Entry<String, Integer>> iter = result1.entrySet().iterator();
+        if(iter.hasNext()){
+            firstTotalClass = iter.next().getKey() + ".class,\n" ;
+        }
+        contentAdditional += firstTotalClass;
+        /*******The End*******/
+        for(Map.Entry<String , Integer> ss : result1Additional.entrySet()){
+            String tmpClass = ss.getKey() + ".class,\n" ;
+            if(!tmpClass.equals(firstTotalClass)){	//Ignore first total class
+                contentAdditional += tmpClass;
+            }
+        }
+        contentAdditional += "})\n";
+        contentAdditional += "public class FeatureTestSuite{\n}";
+        writeSuitFile(System.getProperty("user.dir")+"/src/test/java/FeatureTestSuiteAdditional.java", contentAdditional);
+        
         writer.close();
         writerAdditional.close();
     }
