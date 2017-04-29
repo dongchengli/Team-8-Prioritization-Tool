@@ -359,7 +359,7 @@ public class JUnitExecutionListener extends RunListener {
             }
         }
         contentAdditional += "})\n";
-        contentAdditional += "public class FeatureTestSuite{\n}";
+        contentAdditional += "public class FeatureTestSuiteAdditional{\n}";
         writeSuitFile(System.getProperty("user.dir")+"/src/test/java/FeatureTestSuiteAdditional.java", contentAdditional);
         
         writer.close();
