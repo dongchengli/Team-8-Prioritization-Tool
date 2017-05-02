@@ -31,7 +31,7 @@ Go to https://github.com/julman99/gson-fire, next download Github test project. 
 
 Step 6:
 
-Open the pom.xml file inside the test program then add “dependencies” (add following right after <<dependencies> tag)
+Open the pom.xml file inside the test program then add “dependencies” (such as add following right after <dependencies> tag)
 
 *******************************************************************************************************************
 
@@ -52,8 +52,8 @@ Open the pom.xml file inside the test program then add “dependencies” (add f
 
 Step 7:
 
-Also add the “plugins” to pom.xml file (add following right after     <build>
-        									<plugins> )
+Also add the “plugins” to pom.xml file (such as add following right after     <build>
+        										<plugins> )
 *******************************************************************************************************************
 
             <plugin>
@@ -103,7 +103,7 @@ Step 9:
 
 Inside test project, First make two copies of the current pom.xml file, one for Total Strategy and one for Additional strategy, rename them according to “pom_test_AS.xml” for Additional strategy and “pom_test_TS.xml” for Total strategy. 
 
-Then we add “Includes” right after the <configuration> tag or right before the <argLine> tag inside of the “maven-surefire-plugin”.
+Then we add “Includes” right after the <configuration> tag and right before the <argLine> tag inside of the “maven-surefire-plugin”.
 
 In the pom_test_TS.xml, and we add 
 *******************************************************************************************************************
